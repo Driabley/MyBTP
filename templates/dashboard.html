@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - BTP Platform{% endblock %}
+
+{% block content %}
+<div class="header">
+    <div>
+        <h1 class="header__title">Dashboard</h1>
+        <div class="header__subtitle">Vue d'ensemble de votre activité</div>
+    </div>
+</div>
+
+<div class="grid grid-4">
+    <div class="card card--pad">
+        <div class="metric">
+            <div class="metric__icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+            </div>
+            <div style="flex: 1;">
+                <div class="metric__label">Chantiers Totaux</div>
+                <div class="metric__value">{{ chantiers.total }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card card--pad">
+        <div class="metric">
+            <div class="metric__icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+            </div>
+            <div style="flex: 1;">
+                <div class="metric__label">Chantiers Actifs</div>
+                <div class="metric__value">{{ chantiers.active }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card card--pad">
+        <div class="metric">
+            <div class="metric__icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+            </div>
+            <div style="flex: 1;">
+                <div class="metric__label">Revenus Totaux</div>
+                <div class="metric__value">€{{ chantiers.total_revenue|floatformat:0 }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card card--pad">
+        <div class="metric">
+            <div class="metric__icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+            </div>
+            <div style="flex: 1;">
+                <div class="metric__label">Employés</div>
+                <div class="metric__value">{{ team.total_employees }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-2 mt-3">
+    <div class="card card--pad">
+        <div style="margin-bottom: 20px;">
+            <div class="metric__label">Planning de la Semaine</div>
+            <div class="metric__value" style="margin-top: 8px;">{{ planning.week_hours }}h</div>
+            <div style="color: var(--muted); font-size: 14px; margin-top: 4px;">Heures planifiées</div>
+        </div>
+        <div>
+            <div class="metric__value">€{{ planning.week_cost|floatformat:0 }}</div>
+            <div style="color: var(--muted); font-size: 14px; margin-top: 4px;">Coût total</div>
+        </div>
+    </div>
+    
+    <div class="card card--pad">
+        <div style="margin-bottom: 20px;">
+            <div class="metric__label">Pistes</div>
+            <div class="metric__value" style="margin-top: 8px;">{{ leads.total }}</div>
+            <div style="color: var(--muted); font-size: 14px; margin-top: 4px;">Total pistes</div>
+        </div>
+        <div>
+            <div class="metric__value">{{ leads.qualified }}</div>
+            <div style="color: var(--muted); font-size: 14px; margin-top: 4px;">Qualifiées</div>
+            <div class="metric__value" style="margin-top: 12px; font-size: 20px;">€{{ leads.total_estimated|floatformat:0 }}</div>
+            <div style="color: var(--muted); font-size: 14px; margin-top: 4px;">Montant estimé</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

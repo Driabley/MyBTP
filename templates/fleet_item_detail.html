@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Fleet Item Detail - BTP Platform{% endblock %}
+
+{% block content %}
+<div class="header">
+    <div style="flex: 1;">
+        <h1 class="header__title">Détails de la Commande</h1>
+        <div class="header__subtitle">Informations détaillées sur la commande</div>
+    </div>
+</div>
+
+<div class="card card--pad" id="commande-detail">
+    <div style="color: var(--muted); text-align: center; padding: 40px;">
+        Chargement des données...
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/fleet_item_detail.js' %}"></script>
+<script>
+    const itemId = {{ item_id }};
+    loadCommandeDetail(itemId);
+</script>
+{% endblock %}

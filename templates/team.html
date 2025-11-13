@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Team - BTP Platform{% endblock %}
+
+{% block content %}
+<div class="header">
+    <div style="flex: 1;">
+        <h1 class="header__title">Équipe</h1>
+        <div class="header__subtitle">Gestion des employés et des équipes</div>
+    </div>
+    <button class="btn btn--primary" id="add-employee-btn">
+        <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Ajouter un Employé
+    </button>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 320px; gap: 20px;">
+    <div>
+        <div class="card card--pad mb-3">
+            <div class="flex flex-between align-center">
+                <div>
+                    <div class="metric__label">Employés</div>
+                    <div class="metric__value" style="font-size: 24px;" id="employee-count">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Prénom</th>
+                        <th>Nom</th>
+                        <th>Téléphone</th>
+                        <th>Email</th>
+                        <th>Équipe</th>
+                        <th>Type</th>
+                        <th>Coût Horaire</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="employees-table-body">
+                    <tr>
+                        <td colspan="8" class="text-center" style="padding: 40px; color: var(--muted);">
+                            Aucun employé trouvé
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div>
+        <div class="card card--pad" style="position: sticky; top: 28px;">
+            <h2 style="font-size: 16px; font-weight: 700; color: var(--text-strong); margin-bottom: 16px;">Gestion des Équipes</h2>
+            <div id="teams-list" style="margin-bottom: 16px;">
+                <div style="color: var(--muted); font-size: 14px; text-align: center; padding: 20px;">
+                    Aucune équipe
+                </div>
+            </div>
+            <button class="btn btn--secondary" id="add-team-btn" style="width: 100%;">
+                <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Ajouter une Équipe
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/team.js' %}"></script>
+{% endblock %}

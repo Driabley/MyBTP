@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Map - BTP Platform{% endblock %}
+
+{% block content %}
+<div class="header">
+    <div style="flex: 1;">
+        <h1 class="header__title">Carte des Chantiers</h1>
+        <div class="header__subtitle">Visualisation géographique des projets</div>
+    </div>
+</div>
+
+<div class="card" style="padding: 0; overflow: hidden;">
+    <div id="map-container" style="height: 600px; width: 100%; background: var(--bg); display: flex; align-items: center; justify-content: center;">
+        <div style="text-align: center; color: var(--muted);">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin: 0 auto 16px; opacity: 0.5;">
+                <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                <line x1="8" y1="2" x2="8" y2="18"></line>
+                <line x1="16" y1="6" x2="16" y2="22"></line>
+            </svg>
+            <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Carte des chantiers</div>
+            <div style="font-size: 14px;">Intégration avec une API de cartographie requise</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/map.js' %}"></script>
+{% endblock %}

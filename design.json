@@ -1,0 +1,205 @@
+{
+  "designSystemProfile": {
+    "meta": {
+      "theme": "Light UI Analytics Dashboard",
+      "baseTone": "neutral white with lavender/blue accents",
+      "visualLanguage": "clean, data-focused, with smooth gradients and minimal shadows"
+    },
+    "colors": {
+      "primary": "#6C63FF",
+      "primaryLight": "#A9A3FF",
+      "primaryGradient": "linear-gradient(180deg, #9B8CFF 0%, #6C63FF 100%)",
+      "secondary": "#F3F4F6",
+      "accentPositive": "#00C48C",
+      "accentNegative": "#FF6B6B",
+      "accentNeutral": "#FFCC00",
+      "backgroundMain": "#FFFFFF",
+      "backgroundAlt": "#F9FAFB",
+      "border": "#E5E7EB",
+      "textPrimary": "#111827",
+      "textSecondary": "#6B7280",
+      "textTertiary": "#9CA3AF",
+      "iconNeutral": "#9CA3AF",
+      "shadowColor": "rgba(0, 0, 0, 0.08)"
+    },
+    "elementStyling": {
+      "global": {
+        "fontFamily": "'Inter', 'Segoe UI', sans-serif",
+        "borderRadius": "8px",
+        "shadow": "0 1px 3px rgba(0, 0, 0, 0.08)"
+      },
+      "cards": {
+        "container": {
+          "background": "#FFFFFF",
+          "border": "1px solid #E5E7EB",
+          "shadow": "0 2px 6px rgba(0,0,0,0.04)",
+          "borderRadius": "10px",
+          "padding": "16px 20px"
+        },
+        "header": {
+          "textColor": "#111827",
+          "fontWeight": 600,
+          "fontSize": "16px"
+        },
+        "subtext": {
+          "textColor": "#6B7280",
+          "fontSize": "13px"
+        },
+        "icons": {
+          "fill": "#6C63FF",
+          "background": "#F3F4F6",
+          "borderRadius": "8px",
+          "padding": "6px"
+        },
+        "hover": {
+          "shadow": "0 4px 12px rgba(0,0,0,0.08)",
+          "border": "1px solid #D1D5DB"
+        }
+      },
+      "buttons": {
+        "primary": {
+          "background": "linear-gradient(180deg, #7C3AED 0%, #6D28D9 100%)",
+          "textColor": "#FFFFFF",
+          "iconColor": "#FFFFFF",
+          "border": "none",
+          "hover": {
+            "background": "linear-gradient(180deg, #8B5CF6 0%, #7C3AED 100%)"
+          },
+          "active": {
+            "background": "#5B21B6"
+          },
+          "disabled": {
+            "background": "#E5E7EB",
+            "textColor": "#9CA3AF"
+          }
+        },
+        "secondary": {
+          "background": "#F3F4F6",
+          "textColor": "#374151",
+          "border": "1px solid #E5E7EB",
+          "hover": {
+            "background": "#E5E7EB"
+          }
+        }
+      },
+      "graphs": {
+        "lineChart": {
+          "lineColor": "#6C63FF",
+          "gradientFill": "linear-gradient(180deg, rgba(108,99,255,0.3) 0%, rgba(108,99,255,0) 100%)",
+          "axesColor": "#D1D5DB",
+          "labelColor": "#6B7280"
+        },
+        "barChart": {
+          "barColor": "#6C63FF",
+          "barGradient": "linear-gradient(180deg, #A9A3FF 0%, #6C63FF 100%)",
+          "backgroundBars": "#F3F4F6",
+          "hover": {
+            "barColor": "#8B5CF6"
+          }
+        }
+      },
+      "metrics": {
+        "number": {
+          "textColor": "#111827",
+          "fontSize": "28px",
+          "fontWeight": 700
+        },
+        "percentagePositive": {
+          "textColor": "#00C48C"
+        },
+        "percentageNegative": {
+          "textColor": "#FF6B6B"
+        },
+        "trendArrow": {
+          "positiveColor": "#00C48C",
+          "negativeColor": "#FF6B6B"
+        }
+      },
+      "navSidebar": {
+        "background": "#FFFFFF",
+        "iconColorDefault": "#9CA3AF",
+        "iconColorActive": "#6C63FF",
+        "hoverBackground": "#F3F4F6",
+        "borderRight": "1px solid #E5E7EB"
+      },
+      "inputs": {
+        "background": "#FFFFFF",
+        "border": "1px solid #E5E7EB",
+        "textColor": "#111827",
+        "placeholderColor": "#9CA3AF",
+        "focus": {
+          "border": "1px solid #6C63FF",
+          "shadow": "0 0 0 3px rgba(108,99,255,0.2)"
+        },
+        "disabled": {
+          "background": "#F9FAFB",
+          "textColor": "#9CA3AF"
+        }
+      },
+      "labels": {
+        "default": {
+          "background": "#F3F4F6",
+          "textColor": "#374151",
+          "borderRadius": "6px"
+        },
+        "success": {
+          "background": "rgba(0,196,140,0.1)",
+          "textColor": "#00C48C"
+        },
+        "warning": {
+          "background": "rgba(255,204,0,0.1)",
+          "textColor": "#FFCC00"
+        },
+        "error": {
+          "background": "rgba(255,107,107,0.1)",
+          "textColor": "#FF6B6B"
+        }
+      }
+    },
+    "effects": {
+      "shadows": {
+        "card": "0 2px 6px rgba(0,0,0,0.04)",
+        "hoverCard": "0 4px 12px rgba(0,0,0,0.08)",
+        "button": "0 2px 4px rgba(108,99,255,0.25)"
+      },
+      "gradients": {
+        "primary": "linear-gradient(180deg, #9B8CFF 0%, #6C63FF 100%)",
+        "chartArea": "linear-gradient(180deg, rgba(108,99,255,0.3) 0%, rgba(108,99,255,0) 100%)"
+      },
+      "borderRadius": {
+        "small": "6px",
+        "medium": "8px",
+        "large": "10px"
+      }
+    },
+    "interactions": {
+      "hover": {
+        "cards": {
+          "shadow": "0 4px 12px rgba(0,0,0,0.08)",
+          "border": "#D1D5DB"
+        },
+        "buttons": {
+          "scale": "1.02",
+          "transition": "all 0.15s ease-in-out"
+        }
+      },
+      "focus": {
+        "outline": "2px solid rgba(108,99,255,0.4)"
+      },
+      "active": {
+        "buttons": {
+          "background": "#5B21B6"
+        }
+      }
+    },
+    "rules": {
+      "DO_NOT": [
+        "Do not apply gradient backgrounds on icons — use solid #6C63FF fills only.",
+        "Do not apply card gradients — cards must remain flat white with subtle shadows.",
+        "Do not use button gradient on text labels or charts.",
+        "Do not mix accentPositive and accentNegative colors on the same metric element.",
+        "Do not apply hover shadows on inline metric boxes — only cards and buttons get shadows."
+      ]
+    }
+  }
+}

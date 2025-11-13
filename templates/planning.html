@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Planning - BTP Platform{% endblock %}
+
+{% block content %}
+<div class="header">
+    <div style="flex: 1;">
+        <h1 class="header__title">Planning</h1>
+        <div class="header__subtitle">Gestion des plannings et des affectations</div>
+    </div>
+    <div style="display: flex; gap: 8px;">
+        <button class="btn btn--primary" id="add-slot-btn">
+            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Ajouter un créneau
+        </button>
+        <button class="btn btn--secondary" id="view-toggle">Vue Employés</button>
+        <button class="btn btn--secondary" id="date-range-toggle">Semaine</button>
+        <button class="btn btn--secondary" id="refresh-btn">
+            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            Actualiser
+        </button>
+    </div>
+</div>
+
+<div class="card card--pad mb-3">
+    <div class="flex flex-between align-center" style="gap: 12px; flex-wrap: wrap;">
+        <div class="flex align-center" style="gap: 8px;">
+            <button class="btn btn--secondary" id="prev-period">
+                <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+            <input type="date" class="input" id="date-from" style="width: 140px;">
+            <span style="color: var(--muted);">-</span>
+            <input type="date" class="input" id="date-to" style="width: 140px;">
+            <button class="btn btn--secondary" id="next-period">
+                <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+        </div>
+        <input type="text" class="input" id="search-input" placeholder="Rechercher..." style="width: 300px;">
+    </div>
+</div>
+
+<div class="card card--pad">
+    <div id="planning-calendar" style="min-height: 400px;">
+        <div style="text-align: center; padding: 40px; color: var(--muted);">
+            Calendrier de planning - Utilisez le bouton "Ajouter un créneau" pour créer un nouveau planning
+        </div>
+    </div>
+</div>
+
+<script>
+    // Pass data from Django to JavaScript
+    window.PLANNING_DATA = {
+        users: [
+            {% for user in users %}
+            {
+                id: {{ user.id }},
+                prenom: "{{ user.prenom }}",
+                nom: "{{ user.nom }}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        chantiers: [
+            {% for chantier in chantiers %}
+            {
+                id: {{ chantier.id }},
+                name_chantier: "{{ chantier.name_chantier }}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ]
+    };
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/planning.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Fleet - BTP Platform{% endblock %}
+
+{% block content %}
+<div class="header">
+    <div style="flex: 1;">
+        <h1 class="header__title">Fleet</h1>
+        <div class="header__subtitle">Gestion du matériel et des équipements</div>
+    </div>
+    <button class="btn btn--primary" id="add-commande-btn">
+        <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Ajouter une Commande
+    </button>
+</div>
+
+<div class="card">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Référence</th>
+                <th>Chantier</th>
+                <th>Fournisseur</th>
+                <th>Montant HT</th>
+                <th>Statut</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="commandes-table-body">
+            <tr>
+                <td colspan="7" class="text-center" style="padding: 40px; color: var(--muted);">
+                    Aucune commande trouvée
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/fleet.js' %}"></script>
+{% endblock %}

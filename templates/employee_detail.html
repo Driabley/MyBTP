@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Employee Detail - BTP Platform{% endblock %}
+
+{% block content %}
+<div class="header">
+    <div style="flex: 1;">
+        <h1 class="header__title">Détails de l'Employé</h1>
+        <div class="header__subtitle">Informations détaillées sur l'employé</div>
+    </div>
+</div>
+
+<div class="card card--pad" id="employee-detail">
+    <div style="color: var(--muted); text-align: center; padding: 40px;">
+        Chargement des données...
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/employee_detail.js' %}"></script>
+<script>
+    const employeeId = {{ employee_id }};
+    loadEmployeeDetail(employeeId);
+</script>
+{% endblock %}
