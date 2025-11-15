@@ -14,4 +14,4 @@ do
 done
 
 
-gunicorn --bind :8000 --workers 2 djproject.wsgi
+gunicorn --bind :8000 --workers 2 MyBTP.wsgi
