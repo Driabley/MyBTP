@@ -1,4 +1,3 @@
-# entrypoint.sh
 #!/bin/sh
 
 until cd /code
