@@ -50,8 +50,10 @@
         <div class="metric">
             <div class="metric__icon">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="1" x2="12" y2="23"></line>
-                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="12" y1="18" x2="12" y2="12"></line>
+                    <line x1="9" y1="15" x2="15" y2="15"></line>
                 </svg>
             </div>
             <div style="flex: 1;">
@@ -82,15 +84,16 @@
         <thead>
             <tr>
                 <th>Nom du Chantier</th>
-                <th>Date de Début</th>
+                <th>Adresse du Chantier</th>
                 <th>Chef de Chantier</th>
-                <th>Adresse</th>
+                <th>Devis HT (€)</th>
+                <th>Nombre de Jours</th>
                 <th>Actions</th>
             </tr>
         </thead>
-        <tbody id="chantiers-table-body">
+                <tbody id="chantiers-table-body">
             <tr>
-                <td colspan="5" class="text-center" style="padding: 40px; color: var(--muted);">
+                <td colspan="6" class="text-center" style="padding: 40px; color: var(--muted);">
                     Aucun chantier trouvé
                 </td>
             </tr>

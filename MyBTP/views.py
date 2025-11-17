@@ -134,7 +134,9 @@ def create_planning_slot(request):
 
 
 def chantiers(request):
-    return render(request, 'chantiers.html')
+    from projects.forms import ChantierForm
+    form = ChantierForm()
+    return render(request, 'chantiers.html', {'form': form})
 
 
 def team(request):

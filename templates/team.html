@@ -23,7 +23,7 @@
         <div class="card card--pad mb-3">
             <div class="flex flex-between align-center">
                 <div>
-                    <div class="metric__label">Employés</div>
+                    <div class="metric__label" id="employee-count-label">0 compagnon(s)</div>
                     <div class="metric__value" style="font-size: 24px;" id="employee-count">0</div>
                 </div>
             </div>
@@ -33,19 +33,18 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Prénom</th>
-                        <th>Nom</th>
+                        <th>Employé</th>
+                        <th>Rôle</th>
                         <th>Téléphone</th>
-                        <th>Email</th>
                         <th>Équipe</th>
-                        <th>Type</th>
-                        <th>Coût Horaire</th>
+                        <th>Coût horaire</th>
+                        <th>Compétences</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="employees-table-body">
                     <tr>
-                        <td colspan="8" class="text-center" style="padding: 40px; color: var(--muted);">
+                        <td colspan="7" class="text-center" style="padding: 40px; color: var(--muted);">
                             Aucun employé trouvé
                         </td>
                     </tr>

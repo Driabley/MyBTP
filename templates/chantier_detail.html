@@ -1,0 +1,387 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ chantier.name_chantier }} - BTP Platform{% endblock %}
+
+{% block content %}
+<div class="detail-header">
+    <div>
+        <h1 class="detail-title">{{ chantier.name_chantier|default:"Non défini" }}</h1>
+        <div class="detail-meta">
+            <span class="badge badge--default">{{ status_badge }}</span>
+        </div>
+    </div>
+    <a href="{% url 'chantiers' %}" class="btn btn--secondary">
+        <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Retour
+    </a>
+</div>
+
+<div class="tabs">
+    <button class="tab tab--active" data-tab="general" type="button">
+        <span class="tab__icon">📌</span>
+        Informations générales
+    </button>
+    <button class="tab" data-tab="location" type="button">
+        <span class="tab__icon">🏠</span>
+        Localisation
+    </button>
+    <button class="tab" data-tab="team" type="button">
+        <span class="tab__icon">👥</span>
+        Équipe & Planning
+    </button>
+    <button class="tab" data-tab="documents" type="button">
+        <span class="tab__icon">📄</span>
+        Détails & Documents
+    </button>
+</div>
+
+<!-- Tab 1: Informations générales -->
+<div id="tab-general" class="tab-content tab-content--active">
+    <div class="detail-two-columns">
+        <div class="detail-field">
+            <div class="detail-field__label">Nom du chantier</div>
+            <div class="detail-field__value">{{ chantier.name_chantier|default:"-" }}</div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-field__label">Type de client final</div>
+            <div class="detail-field__value">{{ chantier.client_final_type|default:"-" }}</div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-field__label">Types de travaux</div>
+            <div class="detail-field__value">
+                {% if chantier.travaux_type %}
+                    {% if chantier.travaux_type|length > 0 %}
+                        <ul class="detail-list detail-list--stacked">
+                            {% for travail in chantier.travaux_type %}
+                                <li>{{ travail }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <span class="detail-field__value--empty">-</span>
+                    {% endif %}
+                {% else %}
+                    <span class="detail-field__value--empty">-</span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-field__label">Statut du chantier</div>
+            <div class="detail-field__value">
+                {% if chantier.avancement_statut %}
+                    {% if chantier.avancement_statut|length > 0 %}
+                        <ul class="detail-list detail-list--stacked">
+                            {% for statut in chantier.avancement_statut %}
+                                <li>{{ statut }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <span class="detail-field__value--empty">-</span>
+                    {% endif %}
+                {% else %}
+                    <span class="detail-field__value--empty">-</span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-field__label">Prochaine étape</div>
+            <div class="detail-field__value">
+                {% if chantier.cr_next_step %}
+                    {% if chantier.cr_next_step|length > 0 %}
+                        <ul class="detail-list detail-list--stacked">
+                            {% for step in chantier.cr_next_step %}
+                                <li>{{ step }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <span class="detail-field__value--empty">-</span>
+                    {% endif %}
+                {% else %}
+                    <span class="detail-field__value--empty">-</span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-field__label">Avancement du chantier</div>
+            <div class="detail-field__value">{{ chantier.avancement_chantier }}%</div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-field__label">Devis HT (€)</div>
+            <div class="detail-field__value">{% if chantier.devis_ht %}{{ chantier.devis_ht|floatformat:2 }} €{% else %}-{% endif %}</div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-field__label">Coût total (€)</div>
+            <div class="detail-field__value">{% if chantier.cout_total %}{{ chantier.cout_total|floatformat:2 }} €{% else %}-{% endif %}</div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-field__label">Chef de chantier</div>
+            <div class="detail-field__value">{{ chantier.chef_chantier.full_name|default:"-" }}</div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-field__label">Nombre d'heures</div>
+            <div class="detail-field__value">{{ chantier.nbr_heures|default:"-" }}</div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-field__label">Nombre de jours</div>
+            <div class="detail-field__value">{{ chantier.nombre_de_jours_chantier|default:"-" }}</div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-field__label">Téléphone de contact</div>
+            <div class="detail-field__value">{{ chantier.telephone_contact|default:"-" }}</div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-field__label">Date de début</div>
+            <div class="detail-field__value">{% if chantier.date_debut_chantier %}{{ chantier.date_debut_chantier|date:"d/m/Y" }}{% else %}-{% endif %}</div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-field__label">Date de fin prévue</div>
+            <div class="detail-field__value">{% if chantier.date_fin_prevue_chantier %}{{ chantier.date_fin_prevue_chantier|date:"d/m/Y" }}{% else %}-{% endif %}</div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-field__label">Date RDV technique</div>
+            <div class="detail-field__value">{% if chantier.date_rdv_technique %}{{ chantier.date_rdv_technique|date:"d/m/Y" }}{% else %}-{% endif %}</div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-field__label">Remarques générales</div>
+            <div class="detail-field__value">
+                {% if chantier.contact and chantier.contact != "Si besoin pendant le chantier..." %}
+                    {{ chantier.contact }}
+                {% else %}
+                    <span class="detail-field__value--empty">-</span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-field__label">Date de création</div>
+            <div class="detail-field__value">{{ chantier.created_at|date:"d/m/Y à H:i" }}</div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-field__label">Dernière modification</div>
+            <div class="detail-field__value">{{ chantier.updated_at|date:"d/m/Y à H:i" }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Tab 2: Localisation -->
+<div id="tab-location" class="tab-content">
+    <div class="detail-two-columns">
+        <div class="detail-field">
+            <div class="detail-field__label">Adresse du chantier</div>
+            <div class="detail-field__value">{{ chantier.adresse_chantier|default:"-" }}</div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-field__label">Code postal et ville</div>
+            <div class="detail-field__value">{{ chantier.cp_ville_chantier|default:"-" }}</div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-field__label">Latitude</div>
+            <div class="detail-field__value">
+                {% if chantier.latitude %}
+                    {{ chantier.latitude }}
+                {% else %}
+                    <span class="detail-field__value--empty">-</span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-field__label">Longitude</div>
+            <div class="detail-field__value">
+                {% if chantier.longitude %}
+                    {{ chantier.longitude }}
+                {% else %}
+                    <span class="detail-field__value--empty">-</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    {% if chantier.latitude and chantier.longitude %}
+    <div class="location-card">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 8px; color: var(--muted);">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+        <div style="font-size: 13px; color: var(--muted);">Intégration avec une API de cartographie requise</div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Tab 3: Équipe & Planning -->
+<div id="tab-team" class="tab-content">
+    <div class="detail-section">
+        <h3 class="detail-section__title">Équipe assignée</h3>
+        {% if assigned_employees %}
+            <ul class="detail-list detail-list--stacked">
+                {% for employee in assigned_employees %}
+                    <li>{{ employee.full_name }} ({{ employee.user_type }})</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p style="color: var(--muted); font-style: italic;">Aucun employé assigné pour le moment</p>
+        {% endif %}
+    </div>
+    
+    <div class="detail-section">
+        <h3 class="detail-section__title">
+            Planning de la semaine 
+            <span style="font-size: 13px; font-weight: 500; color: var(--muted);">
+                ({{ week_range.start|date:"d/m" }} - {{ week_range.end|date:"d/m/Y" }})
+            </span>
+        </h3>
+        
+        <div class="planning-summary">
+            <div class="planning-card">
+                <div class="planning-card__label">Heures totales</div>
+                <div class="planning-card__value">{{ planning_summary.week_hours }}h</div>
+            </div>
+            <div class="planning-card">
+                <div class="planning-card__label">Coût total</div>
+                <div class="planning-card__value">{{ planning_summary.week_cost|floatformat:2 }} €</div>
+            </div>
+        </div>
+        
+        {% if planning_summary.planning_data %}
+        <table class="planning-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Employé</th>
+                    <th>Heure début</th>
+                    <th>Heure fin</th>
+                    <th>Heures</th>
+                    <th>Coût</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for slot in planning_summary.planning_data %}
+                <tr>
+                    <td>{{ slot.date|date:"d/m/Y" }}</td>
+                    <td>{{ slot.user }}</td>
+                    <td>{{ slot.start_hour }}</td>
+                    <td>{{ slot.end_hour }}</td>
+                    <td>{{ slot.hours }}h</td>
+                    <td>{{ slot.cost|floatformat:2 }} €</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="color: var(--muted); font-style: italic; margin-top: 12px;">Aucun planning pour cette semaine</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Tab 4: Détails & Documents -->
+<div id="tab-documents" class="tab-content">
+    <div class="detail-two-columns">
+        <div class="detail-field">
+            <div class="detail-field__label">Année / Période de construction</div>
+            <div class="detail-field__value">{{ chantier.annee_periode_construction|default:"-" }}</div>
+        </div>
+        
+        <div class="detail-field">
+            <div class="detail-field__label">Brief URL</div>
+            <div class="detail-field__value">
+                {% if chantier.brief_url %}
+                    <a href="{{ chantier.brief_url }}" target="_blank" class="link">{{ chantier.brief_url }}</a>
+                {% else %}
+                    <span class="detail-field__value--empty">-</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="detail-section">
+        <h3 class="detail-section__title">Liens Google Drive</h3>
+        {% if chantier.gdrive_urls %}
+            {% if chantier.gdrive_urls|length > 0 %}
+                <ul class="detail-list detail-list--stacked">
+                    {% for url in chantier.gdrive_urls %}
+                        <li>
+                            <a href="{{ url }}" target="_blank" class="link">{{ url }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p style="color: var(--muted); font-style: italic;">Aucun lien Google Drive</p>
+            {% endif %}
+        {% else %}
+            <p style="color: var(--muted); font-style: italic;">Aucun lien Google Drive</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    'use strict';
+    
+    function switchTab(tabName) {
+        // Hide all tabs and contents
+        const allTabs = document.querySelectorAll('.tab');
+        const allContents = document.querySelectorAll('.tab-content');
+        
+        allTabs.forEach(tab => {
+            tab.classList.remove('tab--active');
+        });
+        
+        allContents.forEach(content => {
+            content.classList.remove('tab-content--active');
+        });
+        
+        // Show selected tab and content
+        const selectedTab = document.querySelector(`.tab[data-tab="${tabName}"]`);
+        const selectedContent = document.getElementById(`tab-${tabName}`);
+        
+        if (selectedTab) {
+            selectedTab.classList.add('tab--active');
+        }
+        
+        if (selectedContent) {
+            selectedContent.classList.add('tab-content--active');
+        }
+    }
+    
+    // Make function globally available
+    window.switchTab = switchTab;
+    
+    // Add event listeners when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabButtons = document.querySelectorAll('.tab');
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const tabName = this.getAttribute('data-tab');
+                if (tabName) {
+                    switchTab(tabName);
+                }
+            });
+        });
+    });
+})();
+</script>
+{% endblock %}
