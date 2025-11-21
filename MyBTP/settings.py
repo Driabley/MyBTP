@@ -182,5 +182,5 @@ API_KEYS = config(
 # n8n Chatbot Webhook URL
 N8N_CHAT_WEBHOOK_URL = config(
     'N8N_CHAT_WEBHOOK_URL',
-    default='https://n8nbtp.nnpi.eu/webhook-test/464e6e67-47eb-4a78-8046-dee3fae10852'
+    default='https://n8nbtp.nnpi.eu/webhook/464e6e67-47eb-4a78-8046-dee3fae10852'
 )
