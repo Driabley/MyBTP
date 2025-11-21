@@ -27,14 +27,84 @@
     </script>
 </head>
 <body>
-    <div class="app-container">
-        {% include 'sidebar.html' %}
-        <main class="main-content">
-            {% block content %}{% endblock %}
-        </main>
+    <div class="app-shell">
+        <div class="app-sidebar">
+            {% include 'sidebar.html' %}
+        </div>
+        <div class="app-sidebar-overlay"></div>
+        <div class="app-main">
+            <header class="app-topbar">
+                <button class="app-burger" id="burger-menu" aria-label="Toggle sidebar">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <h1 class="app-topbar-title">{% block page_title %}BTP Platform{% endblock %}</h1>
+            </header>
+            <div class="app-content">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
     </div>
     
     <script src="{% static 'js/utils.js' %}"></script>
+    <script>
+        // Mobile Sidebar Control
+        (function() {
+            const burger = document.getElementById('burger-menu');
+            const sidebar = document.querySelector('.app-sidebar');
+            const overlay = document.querySelector('.app-sidebar-overlay');
+            const body = document.body;
+
+            function openSidebar() {
+                sidebar.classList.add('is-open');
+                overlay.classList.add('is-active');
+                body.classList.add('sidebar-open');
+            }
+
+            function closeSidebar() {
+                sidebar.classList.remove('is-open');
+                overlay.classList.remove('is-active');
+                body.classList.remove('sidebar-open');
+            }
+
+            if (burger) {
+                burger.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    if (sidebar.classList.contains('is-open')) {
+                        closeSidebar();
+                    } else {
+                        openSidebar();
+                    }
+                });
+            }
+
+            if (overlay) {
+                overlay.addEventListener('click', closeSidebar);
+            }
+
+            // Close sidebar when clicking on nav links (mobile)
+            const navLinks = document.querySelectorAll('.nav__item');
+            navLinks.forEach(function(link) {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 1024) {
+                        closeSidebar();
+                    }
+                });
+            });
+
+            // Close sidebar on window resize if desktop
+            let resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function() {
+                    if (window.innerWidth > 1024) {
+                        closeSidebar();
+                    }
+                }, 250);
+            });
+        })();
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
