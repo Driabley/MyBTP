@@ -43,6 +43,87 @@ function formatPercentage(value) {
     return `${value}%`;
 }
 
+// ===== Sidebar Theme Toggle =====
+(function() {
+    'use strict';
+    
+    const THEME_STORAGE_KEY = 'sidebar-theme';
+    const DEFAULT_THEME = 'dark';
+    
+    /**
+     * Get saved theme from localStorage or return default
+     */
+    function getSavedTheme() {
+        try {
+            const saved = localStorage.getItem(THEME_STORAGE_KEY);
+            return saved === 'light' || saved === 'dark' ? saved : DEFAULT_THEME;
+        } catch (e) {
+            return DEFAULT_THEME;
+        }
+    }
+    
+    /**
+     * Save theme to localStorage
+     */
+    function saveTheme(theme) {
+        try {
+            localStorage.setItem(THEME_STORAGE_KEY, theme);
+        } catch (e) {
+            console.warn('Could not save theme to localStorage:', e);
+        }
+    }
+    
+    /**
+     * Apply theme to body element
+     */
+    function applyTheme(theme) {
+        document.body.setAttribute('data-sidebar-theme', theme);
+    }
+    
+    /**
+     * Toggle between dark and light themes
+     */
+    function toggleTheme() {
+        const currentTheme = document.body.getAttribute('data-sidebar-theme') || DEFAULT_THEME;
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        applyTheme(newTheme);
+        saveTheme(newTheme);
+    }
+    
+    /**
+     * Initialize theme on page load
+     */
+    function initTheme() {
+        const savedTheme = getSavedTheme();
+        applyTheme(savedTheme);
+        
+        // Setup toggle button event listener
+        const toggleButton = document.getElementById('sidebar-theme-toggle');
+        if (toggleButton) {
+            toggleButton.addEventListener('click', toggleTheme);
+        }
+    }
+    
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initTheme);
+    } else {
+        initTheme();
+    }
+    
+    // Make functions available globally if needed
+    window.sidebarTheme = {
+        toggle: toggleTheme,
+        get: getSavedTheme,
+        set: function(theme) {
+            if (theme === 'dark' || theme === 'light') {
+                applyTheme(theme);
+                saveTheme(theme);
+            }
+        }
+    };
+})();
+
 // Debounce function
 function debounce(func, wait) {
     let timeout;

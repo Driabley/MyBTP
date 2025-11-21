@@ -11,6 +11,7 @@ class ChantierForm(forms.ModelForm):
         fields = [
             'adresse_chantier',
             'cp_ville_chantier',
+            'ville_chantier',
             'client_final_type',
             'contact',
             'date_rdv_technique',
@@ -29,6 +30,10 @@ class ChantierForm(forms.ModelForm):
             'cp_ville_chantier': forms.TextInput(attrs={
                 'class': 'input',
                 'placeholder': 'Code postal et ville'
+            }),
+            'ville_chantier': forms.TextInput(attrs={
+                'class': 'input',
+                'placeholder': 'Ville'
             }),
             'client_final_type': forms.Select(attrs={
                 'class': 'select'

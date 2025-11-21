@@ -1,10 +1,41 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, logout
+from django.contrib.auth.forms import AuthenticationForm
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import User
 from .forms import EmployeeForm
+
+
+def login_view(request):
+    """Login view - redirects authenticated users to dashboard"""
+    if request.user.is_authenticated:
+        return redirect('/')
+    
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            # Redirect to the page the user was trying to access, or home
+            next_url = request.POST.get('next', request.GET.get('next', '/'))
+            return redirect(next_url)
+        else:
+            # Form has errors, will be displayed in template
+            pass
+    else:
+        form = AuthenticationForm()
+    
+    return render(request, 'accounts/login.html', {'form': form})
+
+
+@require_http_methods(["POST", "GET"])
+def logout_view(request):
+    """Logout view - logs out user and redirects to login page"""
+    logout(request)
+    return redirect('accounts:login')
 
 
 @login_required

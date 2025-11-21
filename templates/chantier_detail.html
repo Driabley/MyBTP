@@ -244,52 +244,152 @@
         {% endif %}
     </div>
     
+    <!-- Progress and VA Cards Row -->
     <div class="detail-section">
-        <h3 class="detail-section__title">
-            Planning de la semaine 
-            <span style="font-size: 13px; font-weight: 500; color: var(--muted);">
-                ({{ week_range.start|date:"d/m" }} - {{ week_range.end|date:"d/m/Y" }})
-            </span>
-        </h3>
-        
-        <div class="planning-summary">
-            <div class="planning-card">
-                <div class="planning-card__label">Heures totales</div>
-                <div class="planning-card__value">{{ planning_summary.week_hours }}h</div>
+        <div class="ep-row ep-row--cards">
+            <!-- Card 1: Avancement du chantier -->
+            <div class="ep-card ep-card--progress">
+                <h3 class="ep-card__title">Avancement du chantier</h3>
+
+                {% if not progress.has_hours %}
+                    <p class="ep-card__empty">Aucune heure planifiée définie pour ce chantier.</p>
+                {% else %}
+                    <p class="ep-card__summary">
+                        Vous avez réalisé
+                        <strong>{{ progress.spent|floatformat:0 }}h</strong>
+                        ({{ progress.percent|floatformat:0 }}%)
+                        pour
+                        <strong>{{ progress.planned|floatformat:0 }}h</strong>
+                        estimées.
+                    </p>
+
+                    <div class="ep-progress-bar">
+                        {% if progress.green_width > 0 %}
+                            <div
+                                class="ep-progress-bar__segment ep-progress-bar__segment--green"
+                                style="width: {{ progress.green_width }}%;"
+                            ></div>
+                        {% endif %}
+                        {% if progress.grey_width > 0 %}
+                            <div
+                                class="ep-progress-bar__segment ep-progress-bar__segment--grey"
+                                style="width: {{ progress.grey_width }}%;"
+                            ></div>
+                        {% endif %}
+                        {% if progress.red_width > 0 %}
+                            <div
+                                class="ep-progress-bar__segment ep-progress-bar__segment--red"
+                                style="width: {{ progress.red_width }}%;"
+                            ></div>
+                        {% endif %}
+                    </div>
+
+                    <div class="ep-progress-legend">
+                        {% if progress.spent < progress.planned %}
+                            <div class="ep-legend-item">
+                                <span class="ep-dot ep-dot--green"></span>
+                                Réalisé : {{ progress.spent|floatformat:0 }}h
+                            </div>
+                            <div class="ep-legend-item">
+                                <span class="ep-dot ep-dot--grey"></span>
+                                Restant : {{ progress.remaining|floatformat:0 }}h
+                            </div>
+                        {% elif progress.spent == progress.planned %}
+                            <div class="ep-legend-item">
+                                <span class="ep-dot ep-dot--green"></span>
+                                Réalisé : {{ progress.spent|floatformat:0 }}h
+                            </div>
+                        {% else %}
+                            <div class="ep-legend-item">
+                                <span class="ep-dot ep-dot--green"></span>
+                                Réalisé : {{ progress.planned|floatformat:0 }}h
+                            </div>
+                            <div class="ep-legend-item">
+                                <span class="ep-dot ep-dot--red"></span>
+                                Excédent réalisé : {{ progress.excess|floatformat:0 }}h
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
             </div>
-            <div class="planning-card">
-                <div class="planning-card__label">Coût total</div>
-                <div class="planning-card__value">{{ planning_summary.week_cost|floatformat:2 }} €</div>
+
+            <!-- Card 2: Valeur ajoutée -->
+            <div class="ep-card ep-card--va {% if va_context.va_status == 'good' %}ep-card--va-good{% elif va_context.va_status == 'bad' %}ep-card--va-bad{% endif %}">
+                <h3 class="ep-card__title">Valeur ajoutée du chantier</h3>
+
+                {% if va_context.va_status == 'unknown' %}
+                    <p class="ep-card__empty">
+                        Aucune donnée de devis pour calculer la VA.
+                    </p>
+                {% else %}
+                    <div class="ep-va-main">
+                        <span class="ep-va-emoji">
+                            {% if va_context.va_status == 'good' %}
+                                😀
+                            {% elif va_context.va_status == 'bad' %}
+                                😟
+                            {% else %}
+                                😐
+                            {% endif %}
+                        </span>
+
+                        <div class="ep-va-values">
+                            <div class="ep-va-line">
+                                <span class="ep-va-amount">
+                                    {{ va_context.va_euros|floatformat:2 }} €
+                                </span>
+                                {% if va_context.va_percent is not None %}
+                                    <span class="ep-va-percent">
+                                        ({{ va_context.va_percent|floatformat:0 }} %)
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <div class="ep-va-sub">
+                                VA = Devis HT – Coût réel
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ep-va-footer">
+                        Devis HT : {{ va_context.devis|floatformat:2 }} € –
+                        Coût : {{ chantier.cost_spent_on_project|floatformat:2 }} €
+                    </div>
+                {% endif %}
             </div>
         </div>
+    </div>
+    
+    <!-- Planning List Table -->
+    <div class="detail-section">
+        <h3 class="ep-section-title">Planning</h3>
         
-        {% if planning_summary.planning_data %}
+        {% if all_planning_data %}
         <table class="planning-table">
             <thead>
                 <tr>
                     <th>Date</th>
                     <th>Employé</th>
-                    <th>Heure début</th>
-                    <th>Heure fin</th>
-                    <th>Heures</th>
+                    <th>Heure de début</th>
+                    <th>Heure de fin</th>
+                    <th>Durée</th>
                     <th>Coût</th>
                 </tr>
             </thead>
             <tbody>
-                {% for slot in planning_summary.planning_data %}
+                {% for slot in all_planning_data %}
                 <tr>
                     <td>{{ slot.date|date:"d/m/Y" }}</td>
                     <td>{{ slot.user }}</td>
                     <td>{{ slot.start_hour }}</td>
                     <td>{{ slot.end_hour }}</td>
-                    <td>{{ slot.hours }}h</td>
+                    <td>{{ slot.hours|floatformat:2 }}h</td>
                     <td>{{ slot.cost|floatformat:2 }} €</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         {% else %}
-        <p style="color: var(--muted); font-style: italic; margin-top: 12px;">Aucun planning pour cette semaine</p>
+        <p style="color: var(--muted); font-style: italic; margin-top: 12px;">Aucun planning pour ce chantier</p>
         {% endif %}
     </div>
 </div>

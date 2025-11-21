@@ -3,105 +3,453 @@
 
 {% block title %}Dashboard - BTP Platform{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* ===== Dashboard KPI Cards Styles (Scoped) ===== */
+    .dashboard-kpi-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-top: 24px;
+    }
+
+    @media (max-width: 1200px) {
+        .dashboard-kpi-cards-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-kpi-cards-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .dashboard-kpi-card {
+        background: #FFFFFF;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.15s;
+    }
+
+    .dashboard-kpi-card:hover {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard-kpi-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .dashboard-kpi-card-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #6B7280;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .dashboard-kpi-card-view {
+        font-size: 12px;
+        color: #6366F1;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .dashboard-kpi-card-view:hover {
+        text-decoration: underline;
+    }
+
+    .dashboard-kpi-metric {
+        font-size: 36px;
+        font-weight: 800;
+        color: #111827;
+        margin-bottom: 8px;
+        line-height: 1.2;
+    }
+
+    .dashboard-kpi-trend {
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .dashboard-kpi-trend.positive {
+        color: #12B76A;
+    }
+
+    .dashboard-kpi-trend.negative {
+        color: #EF4444;
+    }
+
+    .dashboard-kpi-chart-container {
+        height: 200px;
+        position: relative;
+        margin-top: 16px;
+    }
+
+    /* Chart.js canvas styling */
+    .dashboard-kpi-chart-container canvas {
+        max-height: 200px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="header">
-    <div>
+    <div style="flex: 1;">
         <h1 class="header__title">Dashboard</h1>
         <div class="header__subtitle">Vue d'ensemble de votre activité</div>
     </div>
 </div>
 
-<div class="grid grid-4">
-    <div class="card card--pad">
-        <div class="metric">
-            <div class="metric__icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                    <circle cx="12" cy="10" r="3"></circle>
-                </svg>
-            </div>
-            <div style="flex: 1;">
-                <div class="metric__label">Chantiers Totaux</div>
-                <div class="metric__value">{{ chantiers.total }}</div>
-            </div>
+<!-- KPI Cards Row -->
+<div class="dashboard-kpi-cards-grid">
+    <!-- Card 1: Revenue -->
+    <div class="dashboard-kpi-card">
+        <div class="dashboard-kpi-card-header">
+            <div class="dashboard-kpi-card-title">Chiffre d'affaire durant le mois</div>
+            <a href="#" class="dashboard-kpi-card-view">View</a>
+        </div>
+        <div class="dashboard-kpi-metric" id="revenueMetric">51 300 €</div>
+        <div class="dashboard-kpi-trend positive">
+            <span>+2,6 %</span>
+            <span>↑</span>
+        </div>
+        <div class="dashboard-kpi-chart-container">
+            <canvas id="revenueChart"></canvas>
         </div>
     </div>
-    
-    <div class="card card--pad">
-        <div class="metric">
-            <div class="metric__icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                </svg>
-            </div>
-            <div style="flex: 1;">
-                <div class="metric__label">Chantiers Actifs</div>
-                <div class="metric__value">{{ chantiers.active }}</div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="card card--pad">
-        <div class="metric">
-            <div class="metric__icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="1" x2="12" y2="23"></line>
-                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                </svg>
-            </div>
-            <div style="flex: 1;">
-                <div class="metric__label">Revenus Totaux</div>
-                <div class="metric__value">€{{ chantiers.total_revenue|floatformat:0 }}</div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="card card--pad">
-        <div class="metric">
-            <div class="metric__icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                </svg>
-            </div>
-            <div style="flex: 1;">
-                <div class="metric__label">Employés</div>
-                <div class="metric__value">{{ team.total_employees }}</div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="grid grid-2 mt-3">
-    <div class="card card--pad">
-        <div style="margin-bottom: 20px;">
-            <div class="metric__label">Planning de la Semaine</div>
-            <div class="metric__value" style="margin-top: 8px;">{{ planning.week_hours }}h</div>
-            <div style="color: var(--muted); font-size: 14px; margin-top: 4px;">Heures planifiées</div>
+    <!-- Card 2: Leads -->
+    <div class="dashboard-kpi-card">
+        <div class="dashboard-kpi-card-header">
+            <div class="dashboard-kpi-card-title">Nombre de leads</div>
+            <a href="#" class="dashboard-kpi-card-view">View</a>
         </div>
-        <div>
-            <div class="metric__value">€{{ planning.week_cost|floatformat:0 }}</div>
-            <div style="color: var(--muted); font-size: 14px; margin-top: 4px;">Coût total</div>
+        <div class="dashboard-kpi-metric" id="leadsMetric">452</div>
+        <div class="dashboard-kpi-trend negative">
+            <span>-9,5 %</span>
+            <span>↓</span>
+        </div>
+        <div class="dashboard-kpi-chart-container">
+            <canvas id="leadsChart"></canvas>
         </div>
     </div>
-    
-    <div class="card card--pad">
-        <div style="margin-bottom: 20px;">
-            <div class="metric__label">Pistes</div>
-            <div class="metric__value" style="margin-top: 8px;">{{ leads.total }}</div>
-            <div style="color: var(--muted); font-size: 14px; margin-top: 4px;">Total pistes</div>
+
+    <!-- Card 3: Deadline Compliance -->
+    <div class="dashboard-kpi-card">
+        <div class="dashboard-kpi-card-header">
+            <div class="dashboard-kpi-card-title">Respect des deadlines</div>
+            <a href="#" class="dashboard-kpi-card-view">View</a>
         </div>
-        <div>
-            <div class="metric__value">{{ leads.qualified }}</div>
-            <div style="color: var(--muted); font-size: 14px; margin-top: 4px;">Qualifiées</div>
-            <div class="metric__value" style="margin-top: 12px; font-size: 20px;">€{{ leads.total_estimated|floatformat:0 }}</div>
-            <div style="color: var(--muted); font-size: 14px; margin-top: 4px;">Montant estimé</div>
+        <div class="dashboard-kpi-metric" id="deadlineMetric">87,2 %</div>
+        <div class="dashboard-kpi-trend positive">
+            <span>+5,2 %</span>
+            <span>↑</span>
+        </div>
+        <div class="dashboard-kpi-chart-container">
+            <canvas id="deadlineChart"></canvas>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    // ===== Configuration =====
+    // TODO: Replace with real backend data from Django context
+    // Example: const revenueData = {{ revenue_data|safe }};
+    
+    // Get current month days for X-axis
+    const today = new Date();
+    const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    const monthDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    
+    // ===== Fake Data Generation =====
+    // TODO: Replace with real data from Django view
+    // Card 1: Revenue data (fake)
+    function generateRevenueData() {
+        const baseValue = 1500;
+        const data = [];
+        for (let i = 0; i < daysInMonth; i++) {
+            // Simulate daily variation with some randomness
+            const variation = Math.sin(i / 5) * 300 + (Math.random() - 0.5) * 200;
+            data.push(Math.max(800, baseValue + variation));
+        }
+        return data;
+    }
+    
+    // Card 2: Leads data (fake)
+    function generateLeadsData() {
+        const baseValue = 15;
+        const data = [];
+        for (let i = 0; i < daysInMonth; i++) {
+            // Simulate peaks on certain days
+            const peak = (i % 7 === 0 || i % 7 === 5) ? 25 : 0;
+            const variation = (Math.random() - 0.5) * 8;
+            data.push(Math.max(5, baseValue + peak + variation));
+        }
+        return data;
+    }
+    
+    // Card 3: Deadline compliance data (fake)
+    function generateDeadlineData() {
+        const currentMonth = [];
+        const previousMonth = [];
+        const baseValue = 85;
+        
+        for (let i = 0; i < daysInMonth; i++) {
+            // Current month (slightly better trend)
+            const trend = 85 + (i / daysInMonth) * 5;
+            const variation = (Math.random() - 0.5) * 8;
+            currentMonth.push(Math.max(70, Math.min(100, trend + variation)));
+            
+            // Previous month (lower baseline)
+            const prevTrend = 80 + (i / daysInMonth) * 3;
+            const prevVariation = (Math.random() - 0.5) * 10;
+            previousMonth.push(Math.max(65, Math.min(95, prevTrend + prevVariation)));
+        }
+        
+        return { currentMonth, previousMonth };
+    }
+    
+    // ===== Chart Initialization =====
+    
+    // Chart 1: Revenue Line Chart
+    function initRevenueChart() {
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        const revenueData = generateRevenueData();
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: monthDays,
+                datasets: [{
+                    label: 'Chiffre d\'affaire',
+                    data: revenueData,
+                    borderColor: '#6366F1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    pointHoverRadius: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        titleFont: { size: 12, weight: '600' },
+                        bodyFont: { size: 13 },
+                        callbacks: {
+                            label: function(context) {
+                                return new Intl.NumberFormat('fr-FR', {
+                                    style: 'currency',
+                                    currency: 'EUR',
+                                    maximumFractionDigits: 0
+                                }).format(context.parsed.y);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: { size: 11 },
+                            color: '#9CA3AF',
+                            maxTicksLimit: 6
+                        }
+                    },
+                    y: {
+                        display: false,
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
+            }
+        });
+    }
+    
+    // Chart 2: Leads Bar Chart
+    function initLeadsChart() {
+        const ctx = document.getElementById('leadsChart').getContext('2d');
+        const leadsData = generateLeadsData();
+        
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: monthDays,
+                datasets: [{
+                    label: 'Leads',
+                    data: leadsData,
+                    backgroundColor: '#6366F1',
+                    borderRadius: 4,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        titleFont: { size: 12, weight: '600' },
+                        bodyFont: { size: 13 },
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y + ' leads';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: { size: 11 },
+                            color: '#9CA3AF',
+                            maxTicksLimit: 6
+                        }
+                    },
+                    y: {
+                        display: false,
+                        grid: {
+                            display: false
+                        },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+    
+    // Chart 3: Deadline Compliance Area Chart
+    function initDeadlineChart() {
+        const ctx = document.getElementById('deadlineChart').getContext('2d');
+        const deadlineData = generateDeadlineData();
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: monthDays,
+                datasets: [
+                    {
+                        label: 'Mois en cours',
+                        data: deadlineData.currentMonth,
+                        borderColor: '#12B76A',
+                        backgroundColor: 'rgba(18, 183, 106, 0.2)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 4,
+                    },
+                    {
+                        label: 'Mois précédent',
+                        data: deadlineData.previousMonth,
+                        borderColor: '#6366F1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 4,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            font: { size: 11 },
+                            color: '#6B7280',
+                            usePointStyle: true,
+                            padding: 12,
+                            boxWidth: 8,
+                            boxHeight: 8
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        titleFont: { size: 12, weight: '600' },
+                        bodyFont: { size: 13 },
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + ' %';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: { size: 11 },
+                            color: '#9CA3AF',
+                            maxTicksLimit: 6
+                        }
+                    },
+                    y: {
+                        display: false,
+                        grid: {
+                            display: false
+                        },
+                        min: 0,
+                        max: 100
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
+            }
+        });
+    }
+    
+    // ===== Initialize All Charts =====
+    document.addEventListener('DOMContentLoaded', function() {
+        initRevenueChart();
+        initLeadsChart();
+        initDeadlineChart();
+    });
+</script>
 {% endblock %}

@@ -21,6 +21,7 @@ def list_teams(request):
             'name': team.name,
             'color': team.color,
             'chef_equipe': team.chef_equipe.full_name if team.chef_equipe else None,
+            'chef_equipe_id': team.chef_equipe.id if team.chef_equipe else None,
             'member_count': team.members.count(),
         })
     
@@ -57,3 +58,60 @@ def create_team(request):
             'message': 'Erreur lors de la création de l\'équipe.',
             'errors': errors
         }, status=400)
+
+
+@login_required
+@require_http_methods(["POST"])
+@ensure_csrf_cookie
+def update_team(request, pk):
+    """Update an existing team via AJAX"""
+    try:
+        team = Equipe.objects.get(pk=pk)
+    except Equipe.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Équipe introuvable.'
+        }, status=404)
+    
+    form = TeamForm(request.POST, instance=team)
+    
+    if form.is_valid():
+        team = form.save()
+        return JsonResponse({
+            'success': True,
+            'message': f'L\'équipe {team.name} a été modifiée avec succès.',
+            'team': {
+                'id': team.id,
+                'name': team.name,
+            }
+        }, status=200)
+    else:
+        errors = {}
+        for field, field_errors in form.errors.items():
+            errors[field] = field_errors[0] if field_errors else ''
+        
+        return JsonResponse({
+            'success': False,
+            'message': 'Erreur lors de la modification de l\'équipe.',
+            'errors': errors
+        }, status=400)
+
+
+@login_required
+@require_http_methods(["POST"])
+@ensure_csrf_cookie
+def delete_team(request, pk):
+    """Delete a team via AJAX"""
+    try:
+        team = Equipe.objects.get(pk=pk)
+        team_name = team.name
+        team.delete()
+        return JsonResponse({
+            'success': True,
+            'message': f'L\'équipe {team_name} a été supprimée avec succès.'
+        }, status=200)
+    except Equipe.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Équipe introuvable.'
+        }, status=404)

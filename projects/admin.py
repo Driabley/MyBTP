@@ -6,7 +6,7 @@ from .models import Chantiers
 class ChantiersAdmin(admin.ModelAdmin):
     list_display = ['name_chantier', 'client_final_type', 'chef_chantier', 'date_debut_chantier', 'avancement_chantier', 'devis_ht']
     list_filter = ['client_final_type', 'chef_chantier', 'date_debut_chantier']
-    search_fields = ['name_chantier', 'adresse_chantier', 'cp_ville_chantier']
+    search_fields = ['name_chantier', 'adresse_chantier', 'cp_ville_chantier', 'contact']
     readonly_fields = ['name_chantier', 'nbr_heures', 'nombre_de_jours_chantier', 'created_at', 'updated_at']
     fieldsets = (
         ('Informations générales', {

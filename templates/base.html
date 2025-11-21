@@ -11,6 +11,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     {% block extra_css %}{% endblock %}
+    <script>
+        // Initialize sidebar theme immediately to prevent flash
+        (function() {
+            const theme = localStorage.getItem('sidebar-theme') || 'dark';
+            document.documentElement.style.setProperty('--sidebar-theme', theme);
+            if (document.body) {
+                document.body.setAttribute('data-sidebar-theme', theme);
+            } else {
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.body.setAttribute('data-sidebar-theme', theme);
+                });
+            }
+        })();
+    </script>
 </head>
 <body>
     <div class="app-container">

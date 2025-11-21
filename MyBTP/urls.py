@@ -19,20 +19,27 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views
-from projects.views import create_chantier, list_chantiers, chantier_detail
+from projects.views import create_chantier, list_chantiers, chantier_detail, map_chantiers
 from accounts.views import create_employee, list_employees
-from teams.views import create_team, list_teams
+from teams.views import create_team, list_teams, update_team, delete_team
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     
-    # Authentication
-    path('login/', views.login_view, name='login'),
+    # API routes
+    path('api/', include('api.urls')),
     
-    # Main views
+    # Chat routes
+    path('', include('chat.urls')),
+    
+    # Authentication - using accounts app
+    path('', include('accounts.urls')),
+    
+    # Main views (must come after auth to avoid conflicts)
     path('', views.dashboard, name='dashboard'),
     path('planning/', views.planning, name='planning'),
     path('planning/create/', views.create_planning_slot, name='create_planning_slot'),
+    path('planning/list/', views.list_planning_slots, name='list_planning_slots'),
     path('chantiers/', views.chantiers, name='chantiers'),
     path('chantiers/<int:id>/', chantier_detail, name='chantier_detail'),
     path('chantiers/list/', list_chantiers, name='list_chantiers'),
@@ -43,8 +50,10 @@ urlpatterns = [
     path('team/employees/create/', create_employee, name='create_employee'),
     path('team/teams/list/', list_teams, name='list_teams'),
     path('team/teams/create/', create_team, name='create_team'),
+    path('team/teams/<int:pk>/edit/', update_team, name='update_team'),
+    path('team/teams/<int:pk>/delete/', delete_team, name='delete_team'),
     path('pistes/', views.pistes, name='pistes'),
-    path('map/', views.map_view, name='map'),
+    path('map/', map_chantiers, name='map_chantiers'),
     path('fleet/', views.fleet, name='fleet'),
     path('fleet/<int:id>/', views.fleet_item_detail, name='fleet_item_detail'),
     

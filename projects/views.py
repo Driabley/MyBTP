@@ -122,6 +122,101 @@ def chantier_detail(request, id):
         .order_by('prenom', 'nom')
     )
     
+    # Get ALL plannings for this chantier (not just current week)
+    all_plannings = chantier.plannings.select_related('user').order_by('date', 'start_hour')
+    
+    # Calculate progress data for "Avancement du chantier"
+    from decimal import Decimal
+    planned = chantier.number_hour_planned or Decimal('0')
+    spent = chantier.number_hour_spent_on_project or Decimal('0')
+    
+    if planned > 0:
+        remaining = max(planned - spent, Decimal('0'))
+        excess = max(spent - planned, Decimal('0'))
+        percent = (spent / planned) * Decimal('100')
+    else:
+        remaining = Decimal('0')
+        excess = Decimal('0')
+        percent = Decimal('0')
+    
+    # Compute bar segment widths for CSS
+    if planned <= 0 and spent <= 0:
+        # no data
+        green_width = grey_width = red_width = 0
+        has_hours = False
+    else:
+        has_hours = True
+        if spent <= planned:
+            # Under or equal to plan
+            total = planned if planned > 0 else spent
+            green_width = float((spent / total) * 100) if total > 0 else 0
+            grey_width = float((remaining / total) * 100) if total > 0 else 0
+            red_width = 0.0
+        else:
+            # Over plan
+            total = spent  # spent is the max
+            green_width = float((planned / total) * 100) if total > 0 else 0
+            red_width = float((excess / total) * 100) if total > 0 else 0
+            grey_width = 0.0
+    
+    progress = {
+        "planned": planned,
+        "spent": spent,
+        "remaining": remaining,
+        "excess": excess,
+        "percent": percent,
+        "green_width": green_width,
+        "grey_width": grey_width,
+        "red_width": red_width,
+        "has_hours": has_hours,
+    }
+    
+    # Build all plannings data for the table
+    all_planning_data = []
+    for slot in all_plannings:
+        start = datetime.combine(slot.date, slot.start_hour)
+        end = datetime.combine(slot.date, slot.end_hour)
+        if end < start:
+            end += timedelta(days=1)
+        delta = end - start
+        hours = delta.total_seconds() / 3600.0
+        cost = float(slot.cout_planning) if slot.cout_planning else 0
+        
+        all_planning_data.append({
+            'date': slot.date,
+            'user': slot.user.full_name if slot.user else 'N/A',
+            'start_hour': slot.start_hour.strftime('%H:%M'),
+            'end_hour': slot.end_hour.strftime('%H:%M'),
+            'hours': round(hours, 2),
+            'cost': cost,
+        })
+    
+    # Calculate VA metrics for the VA card
+    devis = chantier.devis_ht or Decimal('0')
+    va_euros = chantier.va or Decimal('0')
+    
+    if devis > 0:
+        va_percent = (va_euros / devis) * Decimal('100')
+    else:
+        va_percent = None
+    
+    # Determine status
+    threshold = Decimal('55')  # 55%
+    if va_percent is None:
+        va_status = "unknown"
+    elif va_percent >= threshold:
+        va_status = "good"
+    else:
+        va_status = "bad"
+    
+    # Pass Decimal values to template (Django templates handle Decimal formatting automatically)
+    va_context = {
+        "devis": devis,
+        "va_euros": va_euros,
+        "va_percent": va_percent,  # Decimal or None
+        "va_status": va_status,
+    }
+    
     # Determine status badge
     status_badge = "NON DÉFINI"
     if chantier.avancement_statut:
@@ -142,7 +237,42 @@ def chantier_detail(request, id):
         'week_range': {
             'start': week_start,
             'end': week_end,
-        }
+        },
+        # Progress data for "Avancement du chantier" card
+        'progress': progress,
+        # All plannings for the full table
+        'all_planning_data': all_planning_data,
+        # VA (Valeur Ajoutée) context
+        'va_context': va_context,
     }
     
     return render(request, 'chantier_detail.html', context)
+
+
+@login_required
+def map_chantiers(request):
+    """Display map view with all chantiers that have coordinates"""
+    import json
+    
+    # Query all chantiers with non-null latitude and longitude
+    chantiers_with_coords = Chantiers.objects.filter(
+        latitude__isnull=False,
+        longitude__isnull=False
+    ).order_by('name_chantier')
+    
+    # Serialize chantiers data
+    chantiers_data = []
+    for chantier in chantiers_with_coords:
+        chantiers_data.append({
+            'name': chantier.name_chantier or 'Sans nom',
+            'adresse': chantier.adresse_chantier or '',
+            'cp_ville': chantier.cp_ville_chantier or '',
+            'lat': float(chantier.latitude),
+            'lng': float(chantier.longitude),
+        })
+    
+    context = {
+        'chantiers': json.dumps(chantiers_data),
+    }
+    
+    return render(request, 'map.html', context)

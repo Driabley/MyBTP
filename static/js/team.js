@@ -116,6 +116,22 @@ function renderTeams() {
                     </div>
                     <div style="width: 24px; height: 24px; border-radius: 4px; background: ${team.color || '#6C63FF'};"></div>
                 </div>
+                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                    <button onclick="showEditTeamModal(${team.id})" class="btn btn--secondary" style="flex: 1; padding: 6px 12px; font-size: 12px;">
+                        <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Modifier
+                    </button>
+                    <button onclick="showDeleteTeamModal(${team.id}, '${team.name.replace(/'/g, "\\'")}')" class="btn btn--secondary" style="flex: 1; padding: 6px 12px; font-size: 12px; color: #ef4444;">
+                        <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                        Supprimer
+                    </button>
+                </div>
             </div>
         `;
     }).join('');
@@ -261,7 +277,7 @@ function loadTeamsForDropdown(modal) {
     });
 }
 
-function loadChefsEquipeForDropdown(modal) {
+function loadChefsEquipeForDropdown(modal, selectedChefId = null) {
     const select = modal.querySelector('select[name="chef_equipe"]');
     if (!select) return;
     
@@ -272,6 +288,9 @@ function loadChefsEquipeForDropdown(modal) {
         const option = document.createElement('option');
         option.value = chef.id;
         option.textContent = chef.full_name;
+        if (selectedChefId && chef.id === selectedChefId) {
+            option.selected = true;
+        }
         select.appendChild(option);
     });
 }
@@ -390,10 +409,138 @@ function handleTeamSubmit(e) {
     })
     .catch(error => {
         console.error('Error:', error);
-        showNotification('error', 'Erreur', 'Une erreur est survenue lors de la création de l\'équipe.');
+        showNotification('error', 'Erreur', 'Une erreur est survenue.');
         submitButton.disabled = false;
         submitButton.innerHTML = originalText;
     });
+}
+
+function showEditTeamModal(teamId) {
+    const team = teams.find(t => t.id === teamId);
+    if (!team) {
+        showNotification('error', 'Erreur', 'Équipe introuvable.');
+        return;
+    }
+    
+    const content = `
+        <form id="edit-team-form" data-team-id="${teamId}">
+            <div class="input-group">
+                <label class="input-label">Nom de l'équipe *</label>
+                <input type="text" class="input" name="name" placeholder="Nom de l'équipe" value="${(team.name || '').replace(/"/g, '&quot;')}" required>
+            </div>
+            <div class="input-group">
+                <label class="input-label">Couleur</label>
+                <input type="color" class="input" name="color" value="${team.color || '#6366F1'}" style="height: 40px; padding: 2px;">
+            </div>
+            <div class="input-group">
+                <label class="input-label">Chef d'équipe</label>
+                <select class="select" name="chef_equipe">
+                    <option value="">Aucun chef</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 24px;">
+                <button type="submit" class="btn btn--primary" style="flex: 1;">
+                    <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    Enregistrer
+                </button>
+                <button type="button" class="btn btn--secondary" onclick="this.closest('.modal').remove()">Annuler</button>
+            </div>
+        </form>
+    `;
+
+    const modal = utils.createModal('Modifier l\'Équipe', content);
+    
+    // Load chefs d'équipe for the dropdown
+    loadChefsEquipeForDropdown(modal, team.chef_equipe_id);
+    
+    // Handle form submission
+    const form = modal.querySelector('#edit-team-form');
+    if (form) {
+        form.addEventListener('submit', handleTeamSubmit);
+    }
+}
+
+function showDeleteTeamModal(teamId, teamName) {
+    const content = `
+        <div style="margin-bottom: 24px;">
+            <p style="color: var(--text); margin-bottom: 16px;">
+                Êtes-vous sûr de vouloir supprimer l'équipe <strong>${teamName.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</strong> ?
+            </p>
+            <p style="color: var(--muted); font-size: 13px;">
+                Cette action est irréversible. Les membres de l'équipe ne seront pas supprimés, mais leur association à cette équipe sera retirée.
+            </p>
+        </div>
+        <form id="delete-team-form" data-team-id="${teamId}">
+            <div style="display: flex; gap: 8px;">
+                <button type="submit" class="btn btn--primary" style="flex: 1; background: #ef4444; border-color: #ef4444;">
+                    <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    Supprimer
+                </button>
+                <button type="button" class="btn btn--secondary" onclick="this.closest('.modal').remove()">Annuler</button>
+            </div>
+        </form>
+    `;
+
+    const modal = utils.createModal('Supprimer l\'Équipe', content);
+    
+    // Handle form submission
+    const form = modal.querySelector('#delete-team-form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const submitButton = form.querySelector('button[type="submit"]');
+            const originalText = submitButton.innerHTML;
+            
+            // Disable submit button and show loading
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span>Suppression en cours...</span>';
+            
+            // Get CSRF token
+            const csrftoken = getCSRFToken();
+            
+            fetch(`/team/teams/${teamId}/delete/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Close modal
+                    modal.remove();
+                    
+                    // Show success notification
+                    showNotification('success', '', 'Équipe supprimée avec succès !!', true);
+                    
+                    // Reload teams list
+                    loadTeams();
+                    // Also reload employees in case team deletion affects them
+                    loadEmployees();
+                } else {
+                    // Show error notification
+                    showNotification('error', 'Erreur', data.message || 'Erreur lors de la suppression de l\'équipe.');
+                    
+                    // Re-enable submit button
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalText;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('error', 'Erreur', 'Une erreur est survenue lors de la suppression.');
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalText;
+            });
+        });
+    }
 }
 
 function showNotification(type, title, message, quiet = false) {

@@ -148,6 +148,10 @@ function showAddChantierModal() {
                 <input type="text" class="input" name="cp_ville_chantier" placeholder="Code postal et ville" required>
             </div>
             <div class="input-group">
+                <label class="input-label">Ville</label>
+                <input type="text" class="input" name="ville_chantier" placeholder="Ville">
+            </div>
+            <div class="input-group">
                 <label class="input-label">Type de client *</label>
                 <select class="select" name="client_final_type" required>
                     <option value="Particulier" selected>Particulier</option>

@@ -3,6 +3,24 @@
 
 {% block title %}Map - BTP Platform{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""/>
+<style>
+    #map {
+        height: calc(100vh - 200px);
+        width: 100%;
+        min-height: 600px;
+        border-radius: 12px;
+    }
+    .map-container {
+        padding: 0;
+        overflow: hidden;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="header">
     <div style="flex: 1;">
@@ -11,21 +29,83 @@
     </div>
 </div>
 
-<div class="card" style="padding: 0; overflow: hidden;">
-    <div id="map-container" style="height: 600px; width: 100%; background: var(--bg); display: flex; align-items: center; justify-content: center;">
-        <div style="text-align: center; color: var(--muted);">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin: 0 auto 16px; opacity: 0.5;">
-                <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
-                <line x1="8" y1="2" x2="8" y2="18"></line>
-                <line x1="16" y1="6" x2="16" y2="22"></line>
-            </svg>
-            <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Carte des chantiers</div>
-            <div style="font-size: 14px;">Intégration avec une API de cartographie requise</div>
-        </div>
-    </div>
+<div class="card map-container">
+    <div id="map"></div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/map.js' %}"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+<script>
+    // Get chantiers data from Django template
+    const chantiers = {{ chantiers|safe }};
+    
+    // Initialize map - centered on France by default
+    const map = L.map('map').setView([46.6034, 1.8883], 6);
+    
+    // Add OpenStreetMap tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19
+    }).addTo(map);
+    
+    // Create array to store markers for fitBounds
+    const markers = [];
+    
+    // Helper function to escape HTML
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    // Add marker for each chantier
+    if (chantiers && chantiers.length > 0) {
+        chantiers.forEach(function(chantier) {
+            // Create marker
+            const marker = L.marker([chantier.lat, chantier.lng]).addTo(map);
+            
+            // Build popup content (escape HTML to prevent XSS)
+            let popupContent = '<div style="min-width: 200px;">';
+            popupContent += '<div style="font-weight: 600; font-size: 16px; margin-bottom: 8px; color: #1F2937;">';
+            popupContent += escapeHtml(chantier.name || 'Sans nom');
+            popupContent += '</div>';
+            
+            if (chantier.adresse) {
+                popupContent += '<div style="margin-bottom: 4px; color: #4B5563; font-size: 14px;">';
+                popupContent += escapeHtml(chantier.adresse);
+                popupContent += '</div>';
+            }
+            
+            if (chantier.cp_ville) {
+                popupContent += '<div style="color: #4B5563; font-size: 14px;">';
+                popupContent += escapeHtml(chantier.cp_ville);
+                popupContent += '</div>';
+            }
+            
+            popupContent += '</div>';
+            
+            // Bind popup to marker
+            marker.bindPopup(popupContent);
+            
+            // Add to markers array
+            markers.push(marker);
+        });
+        
+        // Fit map bounds to show all markers
+        if (markers.length > 0) {
+            const group = new L.featureGroup(markers);
+            map.fitBounds(group.getBounds().pad(0.1)); // Add 10% padding
+        }
+    } else {
+        // No chantiers with coordinates - show message
+        L.popup()
+            .setLatLng([46.6034, 1.8883])
+            .setContent('<div style="text-align: center; padding: 20px;"><p style="margin: 0; font-weight: 600;">Aucun chantier avec des coordonnées</p><p style="margin: 8px 0 0 0; color: #6B7280;">Ajoutez des coordonnées géographiques aux chantiers pour les voir sur la carte.</p></div>')
+            .openOn(map);
+    }
+</script>
 {% endblock %}

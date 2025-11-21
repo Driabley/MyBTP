@@ -42,6 +42,7 @@ class Chantiers(models.Model):
         blank=True
     )
     cp_ville_chantier = models.CharField(max_length=16)
+    ville_chantier = models.CharField(max_length=30)
     avancement_statut = models.JSONField(default=list, blank=True)
     cr_next_step = models.JSONField(default=list, blank=True)
     avancement_chantier = models.PositiveSmallIntegerField(
@@ -78,6 +79,30 @@ class Chantiers(models.Model):
         max_digits=12,
         decimal_places=2,
         default=0
+    )
+    number_hour_planned = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        help_text="Heures planifiées calculées à partir du devis HT"
+    )
+    number_hour_spent_on_project = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        help_text="Heures totales passées sur le chantier (somme des plannings)"
+    )
+    cost_spent_on_project = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0,
+        help_text="Coût total dépensé sur le chantier (somme des cout_planning)"
+    )
+    va = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0,
+        help_text="Valeur ajoutée = Devis HT - Coût réel"
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -118,24 +143,25 @@ class Chantiers(models.Model):
         if errors:
             raise ValidationError(errors)
     
-    def _generate_name_chantier(self):
-        """Generate automatic name_chantier if empty"""
-        if not self.name_chantier:
-            year = timezone.now().year
-            # Get the last sequence number for this year
-            last_chantier = Chantiers.objects.filter(
-                name_chantier__startswith=f'CH-{year}-'
-            ).order_by('-name_chantier').first()
-            
-            if last_chantier:
-                try:
-                    sequence = int(last_chantier.name_chantier.split('-')[-1]) + 1
-                except (ValueError, IndexError):
-                    sequence = 1
-            else:
-                sequence = 1
-            
-            self.name_chantier = f'CH-{year}-{sequence:04d}'
+    def _compute_name_chantier(self):
+        """Compute name_chantier from contact and cp_ville_chantier: '{contact} / {code_postal} / {ville}'"""
+        contact = (self.contact or "").strip()
+        
+        raw_cp_ville = (self.cp_ville_chantier or "").strip()
+        if " " in raw_cp_ville:
+            code_postal, ville = raw_cp_ville.split(" ", 1)
+        else:
+            code_postal, ville = raw_cp_ville, ""
+        
+        # Fallbacks if fields are missing
+        if not contact:
+            contact = "Inconnu"
+        if not code_postal:
+            code_postal = "N/A"
+        if not ville:
+            ville = "N/A"
+        
+        return f"{contact} / {code_postal} / {ville}"
     
     def _compute_nombre_de_jours_chantier(self):
         """Compute nombre_de_jours_chantier from dates"""
@@ -152,12 +178,29 @@ class Chantiers(models.Model):
         else:
             self.nbr_heures = 0
     
+    def _compute_number_hour_planned(self):
+        """Compute number_hour_planned from devis_ht: (devis_ht / 1500) * 24"""
+        if self.devis_ht is None:
+            return Decimal('0')
+        return (self.devis_ht / Decimal('1500')) * Decimal('24')
+    
+    def _compute_va(self):
+        """Compute VA = devis_ht - cost_spent_on_project."""
+        devis = self.devis_ht or Decimal('0')
+        cost = self.cost_spent_on_project or Decimal('0')
+        return devis - cost
+    
     def save(self, *args, **kwargs):
         """Override save to run validations and computations"""
         self.full_clean()
-        self._generate_name_chantier()
+        # Auto-generate name_chantier from contact and cp_ville_chantier
+        self.name_chantier = self._compute_name_chantier()
         self._compute_nombre_de_jours_chantier()
         self._compute_nbr_heures()
+        # Recompute planned hours from devis_ht
+        self.number_hour_planned = self._compute_number_hour_planned()
+        # Recompute VA
+        self.va = self._compute_va()
         super().save(*args, **kwargs)
     
     def __str__(self):

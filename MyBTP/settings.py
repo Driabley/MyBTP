@@ -43,12 +43,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',  # Django REST Framework
     'accounts',
     'teams',
     'projects',
     'planning',
     'lead',
     'stock',
+    'api',  # API application
+    'chat',  # Chatbot application
 ]
 
 MIDDLEWARE = [
@@ -145,5 +148,39 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
 
+# Authentication Settings
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+# Django REST Framework configuration
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'api.authentication.APIKeyAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'api.permissions.IsAPIKeyAuthenticated',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+    ],
+}
+
+# API Keys configuration
+# Add your API keys here (in production, use environment variables)
+# Format: comma-separated list of API keys
+# Example: API_KEYS=test-api-key-12345,prod-api-key-67890
+API_KEYS = config(
+    'API_KEYS',
+    default='test-api-key-12345,prod-api-key-67890',
+    cast=lambda x: [key.strip() for key in x.split(',') if key.strip()]
+)
+
+# n8n Chatbot Webhook URL
+N8N_CHAT_WEBHOOK_URL = config(
+    'N8N_CHAT_WEBHOOK_URL',
+    default='https://n8nbtp.nnpi.eu/webhook-test/464e6e67-47eb-4a78-8046-dee3fae10852'
+)
